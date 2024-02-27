@@ -27,7 +27,7 @@ from config import OWNER_ID
 from FallenMusic import SUDOERS, app
 
 
-@app.on_message(command(["رفع مطور"]) & filters.user(OWNER_ID))
+@app.on_message(command(["رفع مطور""مط"]) & filters.user(OWNER_ID))
 async def sudoadd(_, message: Message):
     try:
         await message.delete()
