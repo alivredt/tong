@@ -6,7 +6,7 @@ tok = Config.TG_BOT_TOKEN
 
 bot = telebot.TeleBot(tok)
 
-@bot.message_handler(commands=['start'])
+@bot.message_handler(commands=['tl'])
 def start_msg(message):
     bot.reply_to(message, "ارسل ( تلاو ، تلاوات ، تلاوة )")
     
