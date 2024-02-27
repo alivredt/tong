@@ -39,7 +39,7 @@ async def song(_, message: Message):
         await message.delete()
     except:
         pass
-    m = await message.reply_text("- انتظر جاي ابحث | @TFFF_F | .")
+    m = await message.reply_text("- يتم البحث الان .")
 
     query = "".join(" " + str(i) for i in message.command[1:])
     ydl_opts = {"format": "bestaudio[ext=m4a]"}
@@ -59,7 +59,7 @@ async def song(_, message: Message):
             f"- فشل .\n\n**السبب :** `{ex}`"
         )
 
-    await m.edit_text("- تم الرفع انتضر قليلاً  | @TFFF_F |  .")
+    await m.edit_text("- تم الرفع انتضر قليلاً .")
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info_dict = ydl.extract_info(link, download=False)
@@ -92,7 +92,7 @@ async def song(_, message: Message):
             )
             if message.chat.type != ChatType.PRIVATE:
                 await message.reply_text(
-                    "- تم ارسال الملف الصوتي لك في الخاص"
+                    "- حب دزيتلك الملف الصوتي او الصوتبه بلخاص  | @TFFF_F | "
                 )
         except:
             start_butt = InlineKeyboardMarkup(
