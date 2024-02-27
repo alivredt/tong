@@ -61,13 +61,13 @@ from FallenMusic.Helpers.thumbnails import gen_qthumb, gen_thumb
 
 
 @app.on_message(
-    command(["تشغيل", "vplay", "p"])
+    command(["تشغيل", "vplay", "p""غرد"])
     & filters.group
     & ~filters.forwarded
     & ~filters.via_bot
 )
 async def play(_, message: Message):
-    fallen = await message.reply_text("- يتم التشغيل الآن .")
+    fallen = await message.reply_text("- انتضر ابحث عن طلبك @TFFF_F .")
     try:
         await message.delete()
     except:
@@ -180,7 +180,7 @@ async def play(_, message: Message):
     else:
         if len(message.command) < 2:
             return await fallen.edit_text("- الرد على ملف صوتي او اعطاء شي للبحث .")
-        await fallen.edit_text("- يجري معالجة البيانات .")
+        await fallen.edit_text("- يجري معالجة البيانات @TFFF_F .")
         query = message.text.split(None, 1)[1]
         try:
             results = YoutubeSearch(query, max_results=1).to_dict()
@@ -236,7 +236,7 @@ async def play(_, message: Message):
 
         except NoActiveGroupCall:
             return await fallen.edit_text(
-                "**- لايوجد اتصال في الدردشة ."
+                "**- لايوجد اتصال في الدردشة @TFFF_F ."
             )
         except TelegramServerError:
             return await fallen.edit_text(
