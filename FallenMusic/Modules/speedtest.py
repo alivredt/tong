@@ -20,113 +20,48 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import asyncio
+
+import speedtest
 from pyrogram import filters
-from pyrogram.types import Message
 from FallenMusic.filters import command
-from config import OWNER_ID
 from FallenMusic import SUDOERS, app
 
 
-@app.on_message(command(["رفع مطور""مط"]) & filters.user(OWNER_ID))
-async def sudoadd(_, message: Message):
+def testspeed(m):
     try:
-        await message.delete()
-    except:
-        pass
-    if not message.reply_to_message:
-        if len(message.command) != 2:
-            return await message.reply_text(
-                "- قم بالرد بالأيدي او اليوزر ."
-            )
-        user = message.text.split(None, 1)[1]
-        if "@" in user:
-            user = user.replace("@", "")
-        user = await app.get_users(user)
-        if int(user.id) in SUDOERS:
-            return await message.reply_text(f" {user.mention} تم رفعة بالفعل .")
-        try:
-            SUDOERS.add(int(user.id))
-            await message.reply_text(f"- تم رفع {user.mention} المطورين بنجاح.")
-        except:
-            return await message.reply_text("- لايوجد مطورين ..")
-
-    if message.reply_to_message.from_user.id in SUDOERS:
-        return await message.reply_text(
-            f"» {message.reply_to_message.from_user.mention} تم رفعة بالفعل ."
-        )
-    try:
-        SUDOERS.add(message.reply_to_message.from_user.id)
-        await message.reply_text(
-            f"تم {message.reply_to_message.from_user.mention} قائمة المطورين ."
-        )
-    except:
-        return await message.reply_text("- لايوجد مطورين .")
+        test = speedtest.Speedtest()
+        test.get_best_server()
+        m = m.edit("**⇆ فحص الملفات ...**")
+        test.download()
+        m = m.edit("**⇆ رفع السرعة...**")
+        test.upload()
+        test.results.share()
+        result = test.results.dict()
+        m = m.edit("**↻ ارسال النتائج ...**")
+    except Exception as e:
+        return m.edit(e)
+    return result
 
 
-@app.on_message(command(["تك", "rmsudo"]) & filters.user(OWNER_ID))
-async def sudodel(_, message: Message):
-    try:
-        await message.delete()
-    except:
-        pass
-    if not message.reply_to_message:
-        if len(message.command) != 2:
-            return await message.reply_text(
-                "- بالرد على أيدي المستخدم او يوزرة ."
-            )
-        user = message.text.split(None, 1)[1]
-        if "@" in user:
-            user = user.replace("@", "")
-        user = await app.get_users(user)
-        if int(user.id) not in SUDOERS:
-            return await message.reply_text(
-                f" {user.mention} لايوجد مطورين ."
-            )
-        try:
-            SUDOERS.remove(int(user.id))
-            return await message.reply_text(
-                f"» تم تنزيل {user.mention} من قائمة المطورين ."
-            )
-        except:
-            return await message.reply_text(f"- لم يتم رفعة في قائمة المطورين .")
-    else:
-        user_id = message.reply_to_message.from_user.id
-        if int(user_id) not in SUDOERS:
-            return await message.reply_text(
-                f"» {message.reply_to_message.from_user.mention} - لايوجد مطورين ."
-            )
-        try:
-            SUDOERS.remove(int(user_id))
-            return await message.reply_text(
-                f"» تم {message.reply_to_message.from_user.mention} من قائمة المطورين."
-            )
-        except:
-            return await message.reply_text(f"- تم تنزيلة بالفعل .")
-
-
-@app.on_message(command(["المطورين", "sudoers", "sudo"]))
-async def sudoers_list(_, message: Message):
-    hehe = await message.reply_text("- انتظر ")
-    text = "<u>~**المالك :**</u>\n"
-    count = 0
-    user = await app.get_users(OWNER_ID)
-    user = user.first_name if not user.mention else user.mention
-    count += 1
-    text += f"{count}➤ {user}\n"
-    smex = 0
-    for user_id in SUDOERS:
-        if user_id != OWNER_ID:
-            try:
-                user = await app.get_users(user_id)
-                user = user.first_name if not user.mention else user.mention
-                if smex == 0:
-                    smex += 1
-                    text += "\n<u>~ **المطورين :**</u>\n"
-                count += 1
-                text += f"{count}➤ {user}\n"
-            except Exception:
-                continue
-    if not text:
-        await message.reply_text("- لايوجد مطورين .")
-    else:
-        await hehe.edit_text(text)
+@app.on_message(command(["السرعة", "spt"]) & SUDOERS)
+async def speedtest_function(_, message):
+    m = await message.reply_text("**السرعة هي ..**")
+    loop = asyncio.get_event_loop()
+    result = await loop.run_in_executor(None, testspeed, m)
+    output = f"""~ **النتائج الحالية :** 
+    
+<u>**- المعلومات الاساسية :**</u>
+**~ __الموقع :__** {result['client']['isp']}
+**~ __الاستضافة :__** {result['client']['country']}
+  
+<u>**معلومات الاستضافة :**</u>
+**~ __الاسم :__** {result['server']['name']}
+**~ __الدولة :__** {result['server']['country']}, {result['server']['cc']}
+**~ __الاستضافة :__** {result['server']['sponsor']}
+**~ السيرفر :__** {result['server']['latency']}  
+**~ __البنك :__** {result['ping']}"""
+    msg = await app.send_photo(
+        chat_id=message.chat.id, photo=result["share"], caption=output
+    )
+    await m.delete()
