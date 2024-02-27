@@ -39,7 +39,7 @@ async def song(_, message: Message):
         await message.delete()
     except:
         pass
-    m = await message.reply_text("- يتم البحث الان .")
+    m = await message.reply_text("- انتظر جاي ابحث | @TFFF_F | .")
 
     query = "".join(" " + str(i) for i in message.command[1:])
     ydl_opts = {"format": "bestaudio[ext=m4a]"}
@@ -59,7 +59,7 @@ async def song(_, message: Message):
             f"- فشل .\n\n**السبب :** `{ex}`"
         )
 
-    await m.edit_text("- تم الرفع انتضر قليلاً .")
+    await m.edit_text("- تم الرفع انتضر قليلاً  | @TFFF_F |  .")
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info_dict = ydl.extract_info(link, download=False)
